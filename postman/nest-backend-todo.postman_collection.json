@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "4c962cdb-9b08-40c7-b607-afbf74d1792d",
     "name": "Todo Nest Backend",
-    "description": "Collection for the Todo Nest backend. Run Register or Login first; either request saves the access token for protected todo endpoints.",
+    "description": "Collection for the Todo Nest backend. Run Register or Login first; either request saves the access token for protected todo endpoints. All API responses use the statusCode, success, message, and data envelope.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -24,34 +24,6 @@
   ],
   "item": [
     {
-      "name": "Application",
-      "item": [
-        {
-          "name": "Welcome",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "pm.test('returns the welcome message', () => {",
-                  "  pm.response.to.have.status(200);",
-                  "  pm.expect(pm.response.text()).to.eql('Welcome to the Todo Nest Backend!');",
-                  "});"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": "{{baseUrl}}/",
-            "description": "Returns the Todo Nest Backend welcome message."
-          }
-        }
-      ]
-    },
-    {
       "name": "Authentication",
       "item": [
         {
@@ -62,7 +34,11 @@
               "script": {
                 "exec": [
                   "const response = pm.response.json();",
-                  "pm.collectionVariables.set('accessToken', response.access_token);"
+                  "pm.test('returns a successful authentication response', () => {",
+                  "  pm.expect(response.success).to.eql(true);",
+                  "  pm.expect(response.data.accessToken).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.collectionVariables.set('accessToken', response.data.accessToken);"
                 ],
                 "type": "text/javascript"
               }
@@ -92,7 +68,11 @@
               "script": {
                 "exec": [
                   "const response = pm.response.json();",
-                  "pm.collectionVariables.set('accessToken', response.access_token);"
+                  "pm.test('returns a successful authentication response', () => {",
+                  "  pm.expect(response.success).to.eql(true);",
+                  "  pm.expect(response.data.accessToken).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.collectionVariables.set('accessToken', response.data.accessToken);"
                 ],
                 "type": "text/javascript"
               }
@@ -117,6 +97,37 @@
       ]
     },
     {
+      "name": "Application",
+      "item": [
+        {
+          "name": "Welcome",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('returns the welcome message', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  const response = pm.response.json();",
+                  "  pm.expect(response.success).to.eql(true);",
+                  "  pm.expect(response.data).to.eql('Welcome to the Todo Nest Backend!');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/",
+            "description": "Returns the Todo Nest Backend welcome message."
+          }
+        }
+      ]
+    },
+
+    {
       "name": "Todos",
       "item": [
         {
@@ -127,7 +138,11 @@
               "script": {
                 "exec": [
                   "const response = pm.response.json();",
-                  "if (response._id) pm.collectionVariables.set('todoId', response._id);"
+                  "pm.test('returns a created todo', () => {",
+                  "  pm.expect(response.success).to.eql(true);",
+                  "  pm.expect(response.data._id).to.be.a('string').and.not.empty;",
+                  "});",
+                  "pm.collectionVariables.set('todoId', response.data._id);"
                 ],
                 "type": "text/javascript"
               }
